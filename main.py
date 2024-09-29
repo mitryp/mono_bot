@@ -25,7 +25,7 @@ async def main():
     repository = MonoRepository(client, url_service)
     filter_service = FilterService(config)
     currency_service = CurrencyCodeService()
-    repr_service = RepresentationService(currency_service)
+    repr_service = RepresentationService(currency_service, config)
 
     print(config.whitelist)
 

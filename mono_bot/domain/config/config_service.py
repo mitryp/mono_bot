@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 import yaml
+
+from mono_bot.domain.models.account_declaration import AccountDeclaration
 
 
 class ConfigService:
     def __init__(self, config_file: str):
         with open(config_file, 'r') as f:
             self.config = yaml.safe_load(f)
+        self._accounts_declarations: list[AccountDeclaration] | None = None
 
     @property
     def app_name(self) -> str:
@@ -31,5 +36,13 @@ class ConfigService:
         return self.config['mono_token']
 
     @property
-    def visible_ibans(self) -> list[str]:
-        return self.config.get('visible_ibans', [])
+    def account_declarations(self) -> list[AccountDeclaration]:
+        if self._accounts_declarations is not None:
+            return self._accounts_declarations
+
+        raw_ibans = self.config.get('visible_accounts', [])
+        parsed = list(map(AccountDeclaration.from_dict, raw_ibans))
+
+        self._accounts_declarations = parsed
+
+        return parsed

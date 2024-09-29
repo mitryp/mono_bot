@@ -39,7 +39,7 @@ class AccountDto:
         )
 
     def __repr__(self):
-        return f'<AccountDto: {self.masked_pan} ({self.float_balance})>'
+        return f'<AccountDto: {self.type} {self.masked_pan} ({self.float_balance})>'
 
     @property
     def float_balance(self):
