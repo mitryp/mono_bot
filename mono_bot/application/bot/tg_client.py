@@ -22,7 +22,12 @@ async def build_tg_client(config: ConfigService, repository: MonoRepository, fil
 
     @client.on_message(filters.command('state') & filters.private & filters.user(config.whitelist_uids))
     async def state(_: Client, message: Message):
-        _state = await repository.fetch_client_info()
+        try:
+            _state = await repository.fetch_client_info()
+        except KeyError:
+            await message.reply_text('An error occurred during fetching client info. Please, try again later.')
+            return
+
         visible_accounts = filter_service.filter_user_scope(message.from_user.username, _state.accounts)
 
         if not visible_accounts:
