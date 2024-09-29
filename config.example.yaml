@@ -1,0 +1,9 @@
+api:
+  api_id: '123456'
+  api_hash: 'your_api_hash'
+  bot_token: 'bot:token'
+
+mono_token: 'mono_token'
+
+whitelist:
+  - 380999999999
