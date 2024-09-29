@@ -2,3 +2,5 @@
 venv
 *.iml
 config.yaml
+*.session
+*.session-journal

@@ -7,6 +7,10 @@ class ConfigService:
             self.config = yaml.safe_load(f)
 
     @property
+    def app_name(self) -> str:
+        return 'MonoApi'
+
+    @property
     def api_id(self) -> str:
         return self.config['api']['api_id']
 
@@ -19,9 +23,13 @@ class ConfigService:
         return self.config['api']['bot_token']
 
     @property
-    def whitelisted_numbers(self):
+    def whitelist(self) -> str:
         return self.config['whitelist']
 
     @property
-    def mono_token(self):
+    def mono_token(self) -> str:
         return self.config['mono_token']
+
+    @property
+    def visible_ibans(self) -> list[str]:
+        return self.config.get('visible_ibans', [])

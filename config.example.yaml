@@ -6,4 +6,7 @@ api:
 mono_token: 'mono_token'
 
 whitelist:
-  - 380999999999
+  - your_username
+
+visible_ibans:
+  - UA123455432324235432523423
