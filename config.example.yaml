@@ -6,9 +6,14 @@ api:
 mono_token: 'mono_token'
 
 whitelist:
-  - your_username
+  - uid: username1
+    visible_ibans:
+      - UA123456789123456789012345
+  - uid: username2
+    visible_ibans:
+      - UA123455432324235432523423
 
-visible_accounts:
+account_aliases:
   - iban: UA123455432324235432523423
     alias: 'Alias'
   - iban: UA123456789123456789012345

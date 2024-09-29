@@ -3,6 +3,7 @@ from __future__ import annotations
 import yaml
 
 from mono_bot.domain.models.account_declaration import AccountDeclaration
+from mono_bot.domain.models.user_declaration import UserDeclaration
 
 
 class ConfigService:
@@ -28,8 +29,12 @@ class ConfigService:
         return self.config['api']['bot_token']
 
     @property
-    def whitelist(self) -> str:
-        return self.config['whitelist']
+    def whitelist(self) -> list[UserDeclaration]:
+        return list(map(UserDeclaration.from_dict, self.config['whitelist']))
+
+    @property
+    def whitelist_uids(self) -> list[str]:
+        return list(map(lambda x: x.uid, self.whitelist))
 
     @property
     def mono_token(self) -> str:
@@ -40,7 +45,7 @@ class ConfigService:
         if self._accounts_declarations is not None:
             return self._accounts_declarations
 
-        raw_ibans = self.config.get('visible_accounts', [])
+        raw_ibans = self.config.get('account_aliases', [])
         parsed = list(map(AccountDeclaration.from_dict, raw_ibans))
 
         self._accounts_declarations = parsed

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from mono_bot.domain.dtos.account_dto import AccountDto
+from mono_bot.domain.models.account_matcher import AccountMatcher
 
 
-class AccountDeclaration:
+class AccountDeclaration(AccountMatcher):
     def __init__(self, iban: str | None, alias: str | None):
         self.iban = iban.strip().lower() if iban else None
         self.alias = alias

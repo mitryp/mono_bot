@@ -16,14 +16,19 @@ async def build_tg_client(config: ConfigService, repository: MonoRepository, fil
         bot_token=config.bot_token
     )
 
-    @client.on_message(filters.command('start') & filters.private & filters.user(config.whitelist))
+    @client.on_message(filters.command('start') & filters.private & filters.user(config.whitelist_uids))
     async def start(_: Client, message: Message):
         await message.reply_text('Hi! Use /state command to get the info')
 
-    @client.on_message(filters.command('state') & filters.private & filters.user(config.whitelist))
+    @client.on_message(filters.command('state') & filters.private & filters.user(config.whitelist_uids))
     async def state(_: Client, message: Message):
         _state = await repository.fetch_client_info()
-        visible_accounts = filter_service.filter_accounts(_state.accounts)
+        visible_accounts = filter_service.filter_user_scope(message.from_user.username, _state.accounts)
+
+        if not visible_accounts:
+            await message.reply_text('Your username is in the whitelist, but no visible accounts configured for you')
+            return
+
         representation = repr_service.represent_accounts(visible_accounts)
 
         await message.reply_text(representation)
