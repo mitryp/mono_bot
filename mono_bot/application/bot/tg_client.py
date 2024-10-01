@@ -7,8 +7,8 @@ from mono_bot.application.represent.representation_service import Representation
 from mono_bot.domain.config.config_service import ConfigService
 
 
-async def build_tg_client(config: ConfigService, repository: MonoRepository, filter_service: FilterService,
-                          repr_service: RepresentationService) -> Client:
+def build_tg_client(config: ConfigService, repository: MonoRepository, filter_service: FilterService,
+                    repr_service: RepresentationService) -> Client:
     client = Client(
         config.app_name,
         api_id=config.api_id,
