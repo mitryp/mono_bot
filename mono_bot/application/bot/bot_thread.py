@@ -1,6 +1,4 @@
 import asyncio
-import os
-import sys
 
 from pyrogram import idle, Client
 
@@ -26,25 +24,42 @@ async def bot_main(config: ConfigService, url_service: UrlService, mediator: Med
 
     tg_client = build_tg_client(config, repository, filter_service, repr_service)
 
-    mediator.add_observer(lambda x: on_event(x, tg_client, repr_service))
+    mediator.add_observer(lambda x: on_event(x, tg_client, config, repository, repr_service, filter_service))
 
     print('Starting the bot')
 
     await tg_client.start()
 
     futures = [idle()]
-    # if config.hooks_enabled:
-    #     futures.append(repository.request_webhook(config.webhooks_url))
+    if config.hooks_enabled:
+        futures.append(repository.request_webhook(config.webhooks_url))
 
     await asyncio.gather(*futures)
 
 
-async def on_event(event: AsyncEvent, client: Client, repr_service: RepresentationService):
+async def on_event(event: AsyncEvent, client: Client, config: ConfigService, repo: MonoRepository,
+                   repr_service: RepresentationService, filter_service: FilterService):
     if event.event_type != AsyncEvent.HOOK_TRIGGERRED:
         print(event)
         return
 
     dto: WebhookDto = event.data
-    print(dto)
 
-    await client.send_message('mitryp', repr_service.represent_webhook(dto))
+    # todo utilize caching proxy
+    client_info = await repo.fetch_client_info()
+    target_account = next(filter(lambda acc: acc.id == dto.account_id, client_info.accounts), None)
+
+    if target_account is None:
+        print(f'Could not find account {dto.account_id}')
+        return
+
+    scoped_users = filter_service.filter_users_by_account_in_scope(target_account, config.whitelist)
+
+    if not scoped_users:
+        print(f'No users scoped for account {dto.account_id}')
+        return
+
+    message = repr_service.represent_webhook(dto)
+
+    for user in scoped_users:
+        await client.send_message(user.uid, message)
