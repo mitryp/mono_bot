@@ -1,14 +1,9 @@
 import asyncio
 import os
 
-from pyrogram import idle
-
-from mono_bot.application.api.currency_code_service import CurrencyCodeService
-from mono_bot.application.api.mono_client import build_mono_client
-from mono_bot.application.api.mono_repository import MonoRepository
-from mono_bot.application.bot.tg_client import build_tg_client
-from mono_bot.application.filter.filter_service import FilterService
-from mono_bot.application.represent.representation_service import RepresentationService
+from mono_bot.application.bot.bot_thread import bot_main
+from mono_bot.application.mediator.mediator import Mediator
+from mono_bot.application.hook_server.server import webhooks_server
 from mono_bot.domain.config.config_service import ConfigService
 from mono_bot.domain.config.url_service import UrlService
 
@@ -20,18 +15,14 @@ async def main():
 
     config = ConfigService(config_file)
     url_service = UrlService(url_file)
+    print('hooks', config.hooks_enabled)
+    mediator = Mediator()
 
-    client = build_mono_client(config)
-    repository = MonoRepository(client, url_service)
-    filter_service = FilterService(config)
-    currency_service = CurrencyCodeService()
-    repr_service = RepresentationService(currency_service, config)
+    futures = [bot_main(config, url_service, mediator)]
+    if config.hooks_enabled:
+        futures.append(webhooks_server(config, mediator))
 
-    print(config.whitelist)
-
-    tg_client = await build_tg_client(config, repository, filter_service, repr_service)
-    await tg_client.start()
-    await idle()
+    await asyncio.gather(*futures)
 
 
 if __name__ == '__main__':

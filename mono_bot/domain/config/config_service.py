@@ -51,3 +51,23 @@ class ConfigService:
         self._accounts_declarations = parsed
 
         return parsed
+
+    @property
+    def hooks_enabled(self) -> bool:
+        return self.config['webhooks']['enabled']
+
+    @property
+    def webhooks_url(self) -> str:
+        return self.config['webhooks']['url']
+
+    @property
+    def webhooks_server_host(self) -> str:
+        return self.config['webhooks']['server']['host']
+
+    @property
+    def webhooks_server_port(self) -> int:
+        return self.config['webhooks']['server']['port']
+
+    @property
+    def webhooks_server_endpoint(self) -> str:
+        return self.config['webhooks']['server']['endpoint']

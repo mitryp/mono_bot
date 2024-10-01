@@ -9,3 +9,7 @@ class UrlService:
     @property
     def client_info_endpoint(self):
         return self.urls['client_info']
+
+    @property
+    def webhook_endpoint(self):
+        return self.urls['webhook']

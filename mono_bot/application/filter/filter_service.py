@@ -16,7 +16,6 @@ class FilterService:
         return FilterService._filter_accounts(accounts, self.config.account_declarations)
 
     def filter_user_scope(self, uid: str, accounts: list[AccountDto]) -> Iterable[AccountDto]:
-        # return FilterService._filter_accounts(accounts, self.config.whitelist)
         scope = self._find_user_scope(uid)
 
         if not scope:
@@ -28,6 +27,10 @@ class FilterService:
                 res.append(account)
 
         return res
+
+    def filter_users_by_account_in_scope(self, account: AccountDto,
+                                         users: list[UserDeclaration]) -> Iterable[UserDeclaration]:
+        return filter(lambda user: user.matches_account(account), users)
 
     def _find_user_scope(self, uid: str) -> UserDeclaration | None:
         for account in self.config.whitelist:

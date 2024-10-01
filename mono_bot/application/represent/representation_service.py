@@ -5,6 +5,7 @@ from typing import Iterable
 from mono_bot.application.api.currency_code_service import CurrencyCodeService
 from mono_bot.domain.config.config_service import ConfigService
 from mono_bot.domain.dtos.account_dto import AccountDto
+from mono_bot.domain.dtos.webhook_dto import WebhookDto
 from mono_bot.domain.models.account_declaration import AccountDeclaration
 
 
@@ -30,3 +31,10 @@ class RepresentationService:
 
     def represent_accounts(self, accounts: Iterable[AccountDto]) -> str:
         return '\n'.join(map(self._represent_account, accounts))
+
+    def represent_webhook(self, webhook: WebhookDto, account: AccountDto) -> str:
+        item = webhook.statement_item
+
+        return (f'**{item.float_amount} {self.currency_service.represent_currency(item.currency_code)}**: '
+                f'{item.description}\n'
+                f'Balance: {item.float_balance} {self.currency_service.represent_currency(account.currency_code)}')

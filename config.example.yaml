@@ -9,9 +9,19 @@ whitelist:
   - uid: username1
     visible_ibans:
       - UA123456789123456789012345
+    notify: true
   - uid: username2
     visible_ibans:
       - UA123455432324235432523423
+    notify: false
+
+webhooks:
+  enabled: false
+  url: https://your.webhooks.url/hook
+  server:
+    host: localhost
+    port: 8888
+    endpoint: /hook
 
 account_aliases:
   - iban: UA123455432324235432523423
