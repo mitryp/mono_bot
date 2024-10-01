@@ -16,7 +16,7 @@ whitelist:
     notify: false
 
 webhooks:
-  enabled: true
+  enabled: false
   url: https://your.webhooks.url/hook
   server:
     host: localhost
