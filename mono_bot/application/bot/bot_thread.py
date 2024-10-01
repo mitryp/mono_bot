@@ -59,7 +59,7 @@ async def on_event(event: AsyncEvent, client: Client, config: ConfigService, rep
         print(f'No users scoped for account {dto.account_id}')
         return
 
-    message = repr_service.represent_webhook(dto)
+    message = repr_service.represent_webhook(dto, target_account)
 
     for user in scoped_users:
         await client.send_message(user.uid, message)

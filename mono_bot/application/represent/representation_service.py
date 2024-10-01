@@ -32,10 +32,9 @@ class RepresentationService:
     def represent_accounts(self, accounts: Iterable[AccountDto]) -> str:
         return '\n'.join(map(self._represent_account, accounts))
 
-    def represent_webhook(self, webhook: WebhookDto) -> str:
-        # todo add masked card number and balance currency
+    def represent_webhook(self, webhook: WebhookDto, account: AccountDto) -> str:
         item = webhook.statement_item
 
         return (f'**{item.float_amount} {self.currency_service.represent_currency(item.currency_code)}**: '
                 f'{item.description}\n'
-                f'Balance: {item.float_balance}')
+                f'Balance: {item.float_balance} {self.currency_service.represent_currency(account.currency_code)}')
