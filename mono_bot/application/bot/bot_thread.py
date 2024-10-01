@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 
@@ -12,17 +13,11 @@ from mono_bot.application.mediator.mediator import Mediator
 from mono_bot.application.represent.representation_service import RepresentationService
 from mono_bot.domain.config.config_service import ConfigService
 from mono_bot.domain.config.url_service import UrlService
+from mono_bot.domain.dtos.webhook_dto import WebhookDto
 from mono_bot.domain.models.async_event import AsyncEvent
 
 
-async def bot_main(mediator: Mediator):
-    script_path = os.path.dirname(sys.argv[0])
-    config_file = os.path.join(script_path, 'config.yaml')
-    url_file = os.path.join(script_path, 'urls.yaml')
-
-    config = ConfigService(config_file)
-    url_service = UrlService(url_file)
-
+async def bot_main(config: ConfigService, url_service: UrlService, mediator: Mediator):
     client = build_mono_client(config)
     repository = MonoRepository(client, url_service)
     filter_service = FilterService(config)
@@ -31,12 +26,25 @@ async def bot_main(mediator: Mediator):
 
     tg_client = build_tg_client(config, repository, filter_service, repr_service)
 
-    mediator.add_observer(lambda x: on_event(tg_client, x))
+    mediator.add_observer(lambda x: on_event(x, tg_client, repr_service))
+
+    print('Starting the bot')
 
     await tg_client.start()
-    await idle()
+
+    futures = [idle()]
+    # if config.hooks_enabled:
+    #     futures.append(repository.request_webhook(config.webhooks_url))
+
+    await asyncio.gather(*futures)
 
 
-async def on_event(client: Client, event: AsyncEvent):
-    await client.send_message('mitryp', f'```json\n'
-                                        f'{event.data}```')
+async def on_event(event: AsyncEvent, client: Client, repr_service: RepresentationService):
+    if event.event_type != AsyncEvent.HOOK_TRIGGERRED:
+        print(event)
+        return
+
+    dto: WebhookDto = event.data
+    print(dto)
+
+    await client.send_message('mitryp', repr_service.represent_webhook(dto))

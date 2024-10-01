@@ -5,9 +5,10 @@ from mono_bot.domain.models.account_matcher import AccountMatcher
 
 
 class UserDeclaration(AccountMatcher):
-    def __init__(self, uid: str, visible_ibans: list[str] | None):
+    def __init__(self, uid: str, visible_ibans: list[str] | None, notify: bool):
         self.uid = uid
         self.visible_ibans = visible_ibans or []
+        self.notify = notify
 
     @staticmethod
     def from_dict(data: dict) -> UserDeclaration:
@@ -15,11 +16,12 @@ class UserDeclaration(AccountMatcher):
 
         return UserDeclaration(
             uid=data['uid'],
-            visible_ibans=list(map(lambda x: x.strip().lower(), visible_ibans)) if visible_ibans else None
+            visible_ibans=list(map(lambda x: x.strip().lower(), visible_ibans)) if visible_ibans else None,
+            notify=data.get('notify', False),
         )
 
     def __repr__(self) -> str:
-        return f'UserDeclaration(uid={self.uid}, visible_ibans={self.visible_ibans})'
+        return f'UserDeclaration(uid={self.uid}, visible_ibans={self.visible_ibans}, notify={self.notify})'
 
     def matches_account(self, account: AccountDto) -> bool:
         return account.iban.strip().lower() in self.visible_ibans

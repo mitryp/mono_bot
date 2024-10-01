@@ -1,1 +1,2 @@
 client_info: 'https://api.monobank.ua/personal/client-info'
+webhook: 'https://api.monobank.ua/personal/webhook'

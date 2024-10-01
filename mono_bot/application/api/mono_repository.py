@@ -1,3 +1,5 @@
+import asyncio
+
 from httpx import AsyncClient
 
 from mono_bot.domain.config.url_service import UrlService
@@ -14,3 +16,12 @@ class MonoRepository:
         data = response.json()
 
         return ClientInfoDto.from_json(data)
+
+    async def request_webhook(self, webhook_url: str):
+        await asyncio.sleep(1)
+        await self.client.post(
+            self.url_service.webhook_endpoint,
+            json={
+                'webHookUrl': webhook_url
+            }
+        )
