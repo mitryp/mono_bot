@@ -2,12 +2,13 @@ import asyncio
 
 from httpx import AsyncClient
 
-from mono_bot.domain.config.url_service import UrlService
 from mono_bot.domain.dtos.client_info_dto import ClientInfoDto
+from mono_bot.domain.interfaces.mono_repository import IMonoRepository
+from mono_bot.domain.interfaces.url_service import IUrlService
 
 
-class MonoRepository:
-    def __init__(self, client: AsyncClient, url_service: UrlService):
+class MonoRepository(IMonoRepository):
+    def __init__(self, client: AsyncClient, url_service: IUrlService):
         self.client = client
         self.url_service = url_service
 
