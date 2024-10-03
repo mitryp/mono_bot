@@ -1,9 +1,9 @@
 from httpx import AsyncClient
 
-from mono_bot.domain.config.config_service import ConfigService
+from mono_bot.domain.interfaces.config_service import IConfigService
 
 
-def build_mono_client(config: ConfigService) -> AsyncClient:
+def build_mono_client(config: IConfigService) -> AsyncClient:
     return AsyncClient(headers={
         'X-Token': config.mono_token,
     })

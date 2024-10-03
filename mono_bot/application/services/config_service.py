@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import yaml
 
+from mono_bot.domain.interfaces.config_service import IConfigService
 from mono_bot.domain.models.account_declaration import AccountDeclaration
 from mono_bot.domain.models.user_declaration import UserDeclaration
 
 
-class ConfigService:
+class ConfigService(IConfigService):
     def __init__(self, config_file: str):
         with open(config_file, 'r') as f:
             self.config = yaml.safe_load(f)

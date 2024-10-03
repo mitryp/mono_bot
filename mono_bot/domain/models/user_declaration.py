@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from mono_bot.domain.dtos.account_dto import AccountDto
-from mono_bot.domain.models.account_matcher import AccountMatcher
+from mono_bot.domain.interfaces.account_matcher import IAccountMatcher
 
 
-class UserDeclaration(AccountMatcher):
+class UserDeclaration(IAccountMatcher):
     def __init__(self, uid: str, visible_ibans: list[str] | None, notify: bool):
         self.uid = uid
         self.visible_ibans = visible_ibans or []

@@ -1,15 +1,17 @@
 import yaml
 
+from mono_bot.domain.interfaces.url_service import IUrlService
 
-class UrlService:
+
+class UrlService(IUrlService):
     def __init__(self, urls_file: str):
         with open(urls_file, 'r') as f:
             self.urls = yaml.safe_load(f)
 
     @property
-    def client_info_endpoint(self):
+    def client_info_endpoint(self) -> str:
         return self.urls['client_info']
 
     @property
-    def webhook_endpoint(self):
+    def webhook_endpoint(self) -> str:
         return self.urls['webhook']
