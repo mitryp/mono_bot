@@ -4,3 +4,4 @@ venv
 config.yaml
 *.session
 *.session-journal
+*/**/__pycache__/

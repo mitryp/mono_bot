@@ -83,10 +83,12 @@ class StatementItemDto:
 
     @property
     def float_amount(self) -> float:
+        """Final amount in the account currency."""
         return self.amount / 100
 
     @property
     def float_operation_amount(self) -> float:
+        """Amount in the transaction currency (can differ from the account currency)."""
         return self.operation_amount / 100
 
     @property

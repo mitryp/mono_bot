@@ -1,6 +1,7 @@
 import asyncio
 
 from pyrogram import idle, Client
+from pyrogram.types import BotCommand
 
 from mono_bot.application.api.mono_client import build_mono_client
 from mono_bot.application.api.mono_repository import MonoRepository
@@ -32,6 +33,10 @@ async def bot_main(config: IConfigService, url_service: IUrlService, mediator: M
     print('Starting the bot')
 
     await tg_client.start()
+
+    await tg_client.set_bot_commands([
+        BotCommand('state', 'Get the current state of the accounts visible to you'),
+    ])
 
     futures = [idle()]
     if config.hooks_enabled:
