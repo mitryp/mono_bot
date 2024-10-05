@@ -12,7 +12,8 @@ _CODE_TO_CURRENCY: Final[dict[int, tuple[str, str]]] = {
     980: ('UAH', '₴'),
     840: ('USD', '$'),
     978: ('EUR', '€'),
-    826: ('EUR', '£'),
+    826: ('GBP', '£'),
+    985: ('PLN', 'zl'),
 }
 
 
