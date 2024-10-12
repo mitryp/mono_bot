@@ -19,10 +19,8 @@ class MonoRepositoryCachingProxy(IMonoRepository):
     async def fetch_client_info(self, read_cache=False) -> ClientInfoDto:
         now = time.time()
 
-        if read_cache and self.cache:
-            return self.cache
-
-        if self.cache and self.last_cache_time and (now - self.last_cache_time) < self.cache_lifetime_seconds:
+        if self.cache and self.last_cache_time and \
+                (read_cache or now - self.last_cache_time < self.cache_lifetime_seconds):
             return self.cache
 
         info = await self.repository.fetch_client_info()
