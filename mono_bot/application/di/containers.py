@@ -6,6 +6,7 @@ from mono_bot.application.di import factories
 from mono_bot.application.mediator.mediator import Mediator
 from mono_bot.application.services.config_service import ConfigService
 from mono_bot.application.services.filter_service import FilterService
+from mono_bot.application.services.message_service import MessageService
 from mono_bot.application.services.presentation_service import PresentationService
 from mono_bot.application.services.url_service import UrlService
 from mono_bot.domain.interfaces.mono_repository import IMonoRepository
@@ -19,6 +20,7 @@ class Container(containers.DeclarativeContainer):
             'mono_bot.application.bot.tg_client',
             'mono_bot.application.hook_server.server',
             'mono_bot.application.hook_server.webhook_controller',
+            'mono_bot.application.services.message_service',
         ])
 
     config_service = factories.ConfigServiceFactory(
@@ -40,6 +42,8 @@ class Container(containers.DeclarativeContainer):
         PresentationService,
         config_service,
     )
+
+    message_service = factories.MessageServiceFactory(MessageService)
 
     http_client = providers.Singleton(build_mono_client)
 
