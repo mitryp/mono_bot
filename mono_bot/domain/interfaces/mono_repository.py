@@ -9,5 +9,5 @@ class IMonoRepository(abc.ABC):
         ...
 
     @abc.abstractmethod
-    async def request_webhook(self, webhook_url: str):
+    async def request_webhook(self):
         ...

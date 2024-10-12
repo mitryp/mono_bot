@@ -8,10 +8,16 @@ from mono_bot.domain.models.user_declaration import UserDeclaration
 
 
 class ConfigService(IConfigService):
-    def __init__(self, config_file: str):
-        with open(config_file, 'r') as f:
-            self.config = yaml.safe_load(f)
+    def __init__(self, config: dict):
+        self.config = config
         self._accounts_declarations: list[AccountDeclaration] | None = None
+
+    @staticmethod
+    def from_file(config_file: str) -> ConfigService:
+        with open(config_file, 'r') as f:
+            config = yaml.safe_load(f)
+
+        return ConfigService(config)
 
     @property
     def app_name(self) -> str:
