@@ -1,31 +1,17 @@
+import asyncio
+
 from aiohttp import web
+from dependency_injector.wiring import inject, Provide
 
 from mono_bot.application.hook_server.webhook_controller import WebhookController
-from mono_bot.application.mediator.mediator import Mediator
-from mono_bot.application.services.config_service import ConfigService
+from mono_bot.domain.interfaces.config_service import IConfigService
+from mono_bot.domain.interfaces.mono_repository import IMonoRepository
 
 
-# async def confirm_handshake(_: web.Request, mediator: Mediator) -> web.Response:
-#     await mediator.fire_event(AsyncEvent(event_type=AsyncEvent.HANDSHAKE))
-#
-#     return web.Response()
-#
-#
-# async def receive_hook(request: web.Request, mediator: Mediator) -> web.Response:
-#     json = await request.json()
-#
-#     try:
-#         hook_dto = WebhookDto.from_json(json)
-#         await mediator.fire_event(AsyncEvent(event_type=AsyncEvent.HOOK_TRIGGERRED, data=hook_dto))
-#     except KeyError:
-#         await mediator.fire_event(AsyncEvent(event_type=AsyncEvent.HOOK_FAILED))
-#
-#     return web.Response()
-
-
-def build_server(config: ConfigService, mediator: Mediator) -> web.Application:
+@inject
+def build_server(config: IConfigService = Provide['config_service']) -> web.Application:
     app = web.Application()
-    controller = WebhookController(mediator)
+    controller = WebhookController()
 
     app.add_routes([
         web.post(config.webhooks_server_endpoint, controller.receive_hook),
@@ -35,8 +21,10 @@ def build_server(config: ConfigService, mediator: Mediator) -> web.Application:
     return app
 
 
-async def webhooks_server_main(config: ConfigService, mediator: Mediator):
-    app = build_server(config, mediator)
+@inject
+async def webhooks_server_main(config: IConfigService = Provide['config_service'],
+                               repository: IMonoRepository = Provide['mono_repository']):
+    app = build_server()
 
     print(
         f'Starting webhooks server on '
@@ -45,4 +33,7 @@ async def webhooks_server_main(config: ConfigService, mediator: Mediator):
     )
 
     # noinspection PyProtectedMember
-    await web._run_app(app, host=config.webhooks_server_host, port=config.webhooks_server_port)
+    await asyncio.gather(
+        web._run_app(app, host=config.webhooks_server_host, port=config.webhooks_server_port),
+        repository.request_webhook(),
+    )

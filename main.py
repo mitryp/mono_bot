@@ -1,25 +1,34 @@
 import asyncio
-import os
 
+from dependency_injector import providers
+
+from mono_bot.application.api.mono_repository import MonoRepository
+from mono_bot.application.api.mono_repository_caching_proxy import MonoRepositoryCachingProxy
 from mono_bot.application.bot.bot_thread import bot_main
-from mono_bot.application.mediator.mediator import Mediator
+from mono_bot.application.di.containers import Container
 from mono_bot.application.hook_server.server import webhooks_server_main
-from mono_bot.application.services.config_service import ConfigService
-from mono_bot.application.services.url_service import UrlService
+from mono_bot.domain.interfaces.config_service import IConfigService
 
 
 async def main():
-    script_path = os.path.dirname(__file__)
-    config_file = os.path.join(script_path, 'config.yaml')
-    url_file = os.path.join(script_path, 'urls.yaml')
+    container = Container()
+    container.mono_repository.override(
+        providers.Singleton(
+            MonoRepositoryCachingProxy,
+            repository=providers.Factory(
+                MonoRepository,
+                container.http_client,
+                container.config_service,
+                container.url_service,
+            )
+        )
+    )
 
-    config = ConfigService(config_file)
-    url_service = UrlService(url_file)
-    mediator = Mediator()
+    config: IConfigService = container.config_service()
 
-    futures = [bot_main(config, url_service, mediator)]
+    futures = [bot_main()]
     if config.hooks_enabled:
-        futures.append(webhooks_server_main(config, mediator))
+        futures.append(webhooks_server_main())
 
     await asyncio.gather(*futures)
 

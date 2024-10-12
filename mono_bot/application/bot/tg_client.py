@@ -1,3 +1,4 @@
+from dependency_injector.wiring import inject, Provide
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
@@ -7,8 +8,11 @@ from mono_bot.domain.interfaces.mono_repository import IMonoRepository
 from mono_bot.domain.interfaces.presentation_service import IPresentationService
 
 
-def build_tg_client(config: IConfigService, repository: IMonoRepository, filter_: IFilterService,
-                    presenter: IPresentationService) -> Client:
+@inject
+def build_tg_client(config: IConfigService = Provide['config_service'],
+                    repository: IMonoRepository = Provide['mono_repository'],
+                    filter_: IFilterService = Provide['filter_service'],
+                    presenter: IPresentationService = Provide['presentation_service']) -> Client:
     client = Client(
         config.app_name,
         api_id=config.api_id,
